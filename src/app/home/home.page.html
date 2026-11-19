@@ -1,21 +1,27 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title> Blank </ion-title>
+    <ion-title>PriceManager</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <div class="box">
+    <h2>Conexión con el API</h2>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>
-      Start with Ionic
-      <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a>
-    </p>
+    @if (loading()) {
+      <ion-spinner name="dots"></ion-spinner>
+      <p>Probando conexión...</p>
+    }
+
+    @if (state() === 'ok' && info(); as i) {
+      <p class="ok">✅ API conectado</p>
+      <p><strong>{{ i.app }}</strong> · versión {{ i.version }}</p>
+    }
+
+    @if (state() === 'error') {
+      <p class="err">❌ {{ errorMsg() }}</p>
+    }
+
+    <ion-button (click)="checkApi()" [disabled]="loading()">Probar de nuevo</ion-button>
   </div>
 </ion-content>
