@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Panel Admin</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h2>Bienvenido, {{ auth.user()?.name }}</h2>
+  <p>Rol: <strong>{{ auth.role() }}</strong></p>
+  <p>Aquí irá la gestión de productos, promociones y usuarios (fases 3 y 4).</p>
+  <ion-button routerLink="/estado" fill="outline">Ver estado del API</ion-button>
+  <ion-button color="medium" (click)="auth.logout()">Cerrar sesión</ion-button>
+</ion-content>

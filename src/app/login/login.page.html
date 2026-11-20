@@ -1,0 +1,62 @@
+<ion-content [fullscreen]="true">
+  <div class="wrap">
+    <div class="head">
+      <div class="logo">
+        <div class="logo-in">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+            <path d="M15 18H9" />
+            <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+            <circle cx="17" cy="18" r="2" />
+            <circle cx="7" cy="18" r="2" />
+          </svg>
+        </div>
+      </div>
+      <h1>PriceManager</h1>
+      <p>Distribuidora — Gestión de Precios</p>
+    </div>
+
+    <form class="glass" (submit)="onSubmit($event)" novalidate>
+      <label class="lbl" for="email">Correo electrónico</label>
+      <div class="field">
+        <input
+          id="email"
+          name="email"
+          type="email"
+          inputmode="email"
+          autocomplete="username"
+          placeholder="correo@empresa.com"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+        />
+      </div>
+
+      <label class="lbl" for="password">Contraseña</label>
+      <div class="field">
+        <input
+          id="password"
+          name="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          autocomplete="current-password"
+          placeholder="••••••••"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+        />
+        <button type="button" class="eye" (click)="showPassword.set(!showPassword())"
+          [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+          {{ showPassword() ? 'Ocultar' : 'Ver' }}
+        </button>
+      </div>
+
+      @if (error()) {
+        <div class="error" role="alert">{{ error() }}</div>
+      }
+
+      <button type="submit" class="submit" [disabled]="!canSubmit()">
+        {{ loading() ? 'Entrando...' : 'Iniciar sesión' }}
+      </button>
+    </form>
+
+    <p class="note">Si no tienes cuenta, pídesela al administrador.</p>
+  </div>
+</ion-content>
