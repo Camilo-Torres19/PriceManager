@@ -1,0 +1,7 @@
+.mt { margin-top: 12px; }
+.sec-title { font-size: 14px; font-weight: 800; color: #1a3a6b; margin-bottom: 10px; }
+.hint.warn { color: #8a6100; display: block; margin-bottom: 8px; }
+.pw { display: flex; gap: 6px; }
+.pw input { flex: 1; min-width: 0; border: 1px solid #d5dde7; border-radius: 10px; padding: 10px 12px; font-size: 15px; background: #fff; color: #212121; }
+.mini { flex: none; border: 0; border-radius: 10px; padding: 0 10px; font-size: 12px; font-weight: 700; background: #eef1f5; color: #1a3a6b; cursor: pointer; }
+.field select:disabled { opacity: 0.6; }

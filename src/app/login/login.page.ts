@@ -39,6 +39,8 @@ export class LoginPage {
       error: (err: HttpErrorResponse) => {
         this.loading.set(false);
         if (err.status === 401) this.error.set('Correo o contraseña incorrectos.');
+        else if (err.status === 429)
+          this.error.set(err.error?.error ?? 'Demasiados intentos. Espera unos minutos.');
         else if (err.status === 0)
           this.error.set('No se pudo conectar con el servidor. ¿Está encendido el API?');
         else this.error.set('Ocurrió un error. Intenta de nuevo.');

@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Usuarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="add()" aria-label="Nuevo usuario">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="dots"></ion-refresher-content>
+  </ion-refresher>
+
+  @if (inactiveCount() > 0) {
+    <div class="filters">
+      <div class="chips">
+        <button type="button" class="chip" [class.on]="showInactive()" (click)="showInactive.set(!showInactive())">
+          Ver inactivos <span class="n">{{ inactiveCount() }}</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="wrap">
+      @for (u of visible(); track u.id) {
+        <div class="card click" [class.dim]="!u.is_active" role="button" tabindex="0" (click)="edit(u)" (keydown.enter)="edit(u)">
+          <div class="u-head">
+            <div class="u-avatar" [class.admin]="u.role === 'admin'">{{ u.name.charAt(0).toUpperCase() }}</div>
+            <div class="u-txt">
+              <div class="u-name">
+                {{ u.name }}
+                @if (u.id === auth.user()?.id) { <small>(tú)</small> }
+              </div>
+              <div class="u-mail">{{ u.email }}</div>
+            </div>
+            <span class="role" [class.admin]="u.role === 'admin'">{{ u.role === 'admin' ? 'Admin' : 'Preventista' }}</span>
+          </div>
+          <div class="u-foot">
+            @if (u.zone) { <span>📍 {{ u.zone }}</span> }
+            @if (u.role === 'preventista') {
+              <span>{{ u.clients_count }} cliente(s)</span>
+              @if (u.pending_orders) { <span class="pend">{{ u.pending_orders }} pedido(s) pendiente(s)</span> }
+            }
+            @if (!u.is_active) { <span class="st st-anulado">Inactivo</span> }
+          </div>
+        </div>
+      } @empty {
+        <div class="state">No hay usuarios.</div>
+      }
+    </div>
+  }
+</ion-content>

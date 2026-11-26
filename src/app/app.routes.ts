@@ -74,6 +74,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./preventista/clients/client-form.page').then((m) => m.PrevClientFormPage),
       },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('./admin/users/users.page').then((m) => m.AdminUsersPage),
+      },
+      {
+        path: 'usuarios/nuevo',
+        loadComponent: () => import('./admin/users/user-form.page').then((m) => m.AdminUserFormPage),
+      },
+      {
+        path: 'usuarios/:id',
+        loadComponent: () => import('./admin/users/user-form.page').then((m) => m.AdminUserFormPage),
+      },
     ],
   },
   {

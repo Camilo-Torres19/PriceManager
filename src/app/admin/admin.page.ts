@@ -16,6 +16,7 @@ import {
   logOutOutline,
   megaphoneOutline,
   peopleOutline,
+  personAddOutline,
   receiptOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../core/auth.service';
@@ -70,7 +71,7 @@ export class AdminPage {
   );
 
   constructor() {
-    addIcons({ alertOutline, cubeOutline, logOutOutline, megaphoneOutline, peopleOutline, receiptOutline });
+    addIcons({ alertOutline, cubeOutline, logOutOutline, megaphoneOutline, peopleOutline, personAddOutline, receiptOutline });
   }
 
   ionViewWillEnter() {

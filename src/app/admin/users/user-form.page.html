@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/usuarios" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit() ? 'Editar usuario' : 'Nuevo usuario' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (loadError()) {
+    <div class="state"><p class="err">{{ loadError() }}</p></div>
+  } @else {
+    <form class="form" (submit)="$event.preventDefault(); save()" novalidate>
+      <div class="field">
+        <label for="name">Nombre <span class="req">*</span></label>
+        <input id="name" name="name" type="text" maxlength="100" placeholder="Ej: Carlos Gómez"
+          [value]="name()" (input)="name.set($any($event.target).value)" />
+        @if (submitted() && errors()['name']) { <small class="msg">{{ errors()['name'] }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="email">Correo (para entrar) <span class="req">*</span></label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="off" maxlength="150"
+          [value]="email()" (input)="email.set($any($event.target).value)" />
+        @if (submitted() && errors()['email']) { <small class="msg">{{ errors()['email'] }}</small> }
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="role">Rol</label>
+          <select id="role" name="role" [disabled]="isSelf()" (change)="role.set($any($event.target).value)">
+            <option value="preventista" [selected]="role() === 'preventista'">Preventista</option>
+            <option value="admin" [selected]="role() === 'admin'">Administrador</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="zone">Zona</label>
+          <input id="zone" name="zone" type="text" maxlength="100" placeholder="Ej: Norte"
+            [value]="zone()" (input)="zone.set($any($event.target).value)" />
+        </div>
+      </div>
+      @if (role() === 'admin' && !isSelf()) {
+        <small class="hint warn">Un administrador puede cambiar precios, promociones, usuarios y confirmar pedidos.</small>
+      }
+
+      @if (!isEdit()) {
+        <div class="field mt">
+          <label for="password">Contraseña inicial <span class="req">*</span></label>
+          <div class="pw">
+            <input id="password" name="password" [type]="showPassword() ? 'text' : 'password'" autocomplete="new-password"
+              [value]="password()" (input)="password.set($any($event.target).value)" />
+            <button type="button" class="mini" (click)="showPassword.set(!showPassword())">{{ showPassword() ? 'Ocultar' : 'Ver' }}</button>
+            <button type="button" class="mini" (click)="suggest()">Sugerir</button>
+          </div>
+          @if (submitted() && errors()['password']) { <small class="msg">{{ errors()['password'] }}</small> }
+          <small class="hint">Entrégasela al usuario en persona, no por un grupo de WhatsApp.</small>
+        </div>
+      }
+
+      <button type="submit" class="primary mt" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : (isEdit() ? 'Guardar cambios' : 'Crear usuario') }}
+      </button>
+    </form>
+
+    @if (current(); as u) {
+      <section class="form">
+        <div class="sec-title">Restablecer contraseña</div>
+        <div class="pw">
+          <input [type]="showPassword() ? 'text' : 'password'" autocomplete="new-password" aria-label="Nueva contraseña"
+            placeholder="Nueva contraseña" [value]="newPassword()" (input)="newPassword.set($any($event.target).value)" />
+          <button type="button" class="mini" (click)="showPassword.set(!showPassword())">{{ showPassword() ? 'Ocultar' : 'Ver' }}</button>
+          <button type="button" class="mini" (click)="suggest()">Sugerir</button>
+        </div>
+        <button type="button" class="secondary mt" [disabled]="saving() || !newPassword()" (click)="changePassword()">
+          Cambiar contraseña
+        </button>
+      </section>
+
+      <section class="form">
+        <div class="sec-title">Estado</div>
+        <p class="hint">
+          {{ u.is_active ? 'Activo: puede entrar a la app.' : 'Inactivo: no puede entrar.' }}
+          @if (u.role === 'preventista') { · {{ u.clients_count }} cliente(s) · {{ u.pending_orders }} pedido(s) pendiente(s) }
+        </p>
+        @if (isSelf()) {
+          <p class="hint">No puedes desactivar tu propio usuario.</p>
+        } @else {
+          <button type="button" [class.danger-btn]="u.is_active" [class.secondary]="!u.is_active"
+            [disabled]="saving()" (click)="toggleActive()">
+            {{ u.is_active ? 'Desactivar usuario' : 'Activar usuario' }}
+          </button>
+        }
+      </section>
+    }
+  }
+</ion-content>
