@@ -32,7 +32,7 @@ export class OrderDetailPage {
   private toast = inject(ToastService);
   auth = inject(AuthService);
 
-  /** /preventista/pedidos/:id */
+  /** /preventista/pedidos/:id o /admin/pedidos/:id */
   id = input.required<string>();
 
   readonly money = money;
@@ -45,6 +45,8 @@ export class OrderDetailPage {
   busy = signal(false);
 
   isAdmin = computed(() => this.auth.role() === 'admin');
+  /** El admin navega bajo /admin/pedidos; el preventista bajo /preventista/pedidos */
+  base = computed(() => (this.isAdmin() ? '/admin/pedidos' : '/preventista/pedidos'));
   /** Mismas reglas que el API */
   canEdit = computed(() => {
     const o = this.order();
@@ -77,7 +79,7 @@ export class OrderDetailPage {
   }
 
   edit() {
-    void this.nav.navigateForward(['/preventista/pedidos', this.id(), 'editar']);
+    void this.nav.navigateForward([this.base(), this.id(), 'editar']);
   }
 
   async cancel() {

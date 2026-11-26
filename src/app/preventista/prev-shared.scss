@@ -1,6 +1,7 @@
 // Estilos comunes de las pantallas del preventista (clientes y pedidos)
 ion-toolbar { --background: #1a3a6b; --color: #fff; }
 ion-back-button { --color: #fff; }
+ion-toolbar ion-button { --color: #fff; }
 ion-content { --background: #f0f4f8; color: #212121; }
 
 .filters { background: #fff; padding: 10px 12px 8px; border-bottom: 1px solid #e6eaf0; }
@@ -58,3 +59,4 @@ ion-content { --background: #f0f4f8; color: #212121; }
 }
 .old { color: #8a96a3; text-decoration: line-through; font-size: 12px; }
 .green { color: #2e7d32; }
+.mt-btn { margin-top: 10px; }

@@ -17,6 +17,7 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { add, addCircleOutline, closeCircle, remove, searchOutline, warningOutline } from 'ionicons/icons';
+import { AuthService } from '../../core/auth.service';
 import { CatalogService } from '../../core/catalog.service';
 import { Client, ClientsService } from '../../core/clients.service';
 import { errorMessage, money } from '../../core/format';
@@ -59,6 +60,7 @@ export class PrevOrderFormPage {
   private route = inject(ActivatedRoute);
   private alerts = inject(AlertController);
   private toast = inject(ToastService);
+  private auth = inject(AuthService);
 
   /** Viene de /preventista/pedidos/:id/editar (no existe en /nuevo) */
   id = input<string>();
@@ -80,6 +82,8 @@ export class PrevOrderFormPage {
   productSearch = signal('');
 
   isEdit = computed(() => !!this.id());
+  /** El admin vuelve a /admin/pedidos; el preventista a /preventista/pedidos */
+  base = computed(() => (this.auth.role() === 'admin' ? '/admin/pedidos' : '/preventista/pedidos'));
   client = computed(() => this.clients().find((c) => c.id === this.clientId()) ?? null);
   inOrder = computed(() => new Map(this.lines().map((l) => [l.product_id, l.quantity])));
 
@@ -276,7 +280,7 @@ export class PrevOrderFormPage {
         );
         await this.showWarnings(res.warnings);
         this.loadedFor = null; // la próxima vez arranca limpio
-        void this.nav.navigateRoot(['/preventista/pedidos', id]);
+        void this.nav.navigateRoot([this.base(), id]);
       },
       error: (err) => {
         this.saving.set(false);

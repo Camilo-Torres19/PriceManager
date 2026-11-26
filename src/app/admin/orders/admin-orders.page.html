@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pedidos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="dots"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="filters">
+    <div class="chips">
+      @for (s of statuses; track s.key) {
+        <button type="button" class="chip" [class.on]="status() === s.key" (click)="setStatus(s.key)">{{ s.label }}</button>
+      }
+    </div>
+    <div class="row f-row">
+      <select aria-label="Preventista" (change)="setPreventista($any($event.target).value)">
+        <option value="" [selected]="!preventistaId()">Todos los preventistas</option>
+        @for (u of preventistas(); track u.id) {
+          <option [value]="u.id" [selected]="preventistaId() === u.id">{{ u.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="row f-row">
+      <label class="f-date">Desde
+        <input type="date" [value]="from()" (change)="setFrom($any($event.target).value)" />
+      </label>
+      <label class="f-date">Hasta
+        <input type="date" [value]="to()" (change)="setTo($any($event.target).value)" />
+      </label>
+    </div>
+    <div class="chips small">
+      <button type="button" class="chip" (click)="range(0)">Hoy</button>
+      <button type="button" class="chip" (click)="range(7)">7 días</button>
+      <button type="button" class="chip" (click)="range(30)">30 días</button>
+      <button type="button" class="chip" (click)="range(null)">Todo</button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="sum">
+      {{ summary().count }} pedido(s) · <b>{{ money(summary().total) }}</b>
+      @if (status() === 'todos') { <small>(sin anulados)</small> }
+      @if (summary().count === 300) { <small> · se muestran los 300 más recientes</small> }
+    </div>
+    <div class="wrap">
+      @for (o of items(); track o.id) {
+        <div class="card click" [class.dim]="o.status === 'anulado'" role="button" tabindex="0"
+          (click)="open(o)" (keydown.enter)="open(o)">
+          <div class="o-head">
+            <div class="o-txt">
+              <div class="o-client">{{ o.client_name }}</div>
+              <div class="o-meta">#{{ o.id }} · {{ shortDate(o.created_at) }}</div>
+              <div class="o-prev">👤 {{ o.preventista_name }}</div>
+            </div>
+            <span class="st st-{{ o.status }}">{{ statusText[o.status] }}</span>
+          </div>
+          <div class="o-foot">
+            <span class="o-items">{{ o.items_count }} producto(s)</span>
+            <span class="o-total">{{ money(o.total) }}</span>
+          </div>
+        </div>
+      } @empty {
+        <div class="state">No hay pedidos con estos filtros.</div>
+      }
+    </div>
+  }
+</ion-content>

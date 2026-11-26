@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/preventista/clientes" text="Atrás"></ion-back-button>
+      <ion-back-button [defaultHref]="base()" text="Atrás"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ isEdit() ? 'Editar cliente' : 'Nuevo cliente' }}</ion-title>
   </ion-toolbar>
@@ -59,13 +59,33 @@
           [value]="notes()" (input)="notes.set($any($event.target).value)"></textarea>
       </div>
 
-      @if (current()?.preventista_name) {
+      @if (isAdmin()) {
+        <div class="field">
+          <label for="prev">Preventista asignado</label>
+          <select id="prev" name="prev" (change)="preventistaId.set(+$any($event.target).value || null)">
+            <option value="" [selected]="!preventistaId()">Sin asignar</option>
+            @for (u of preventistas(); track u.id) {
+              <option [value]="u.id" [selected]="preventistaId() === u.id">
+                {{ u.name }}{{ u.zone ? ' · ' + u.zone : '' }}{{ u.is_active ? '' : ' (inactivo)' }}
+              </option>
+            }
+          </select>
+          <small class="hint">El preventista solo ve los clientes que tiene asignados.</small>
+        </div>
+      } @else if (current()?.preventista_name) {
         <p class="hint">Asignado a: {{ current()?.preventista_name }}</p>
       }
 
       <button type="submit" class="primary" [disabled]="saving()">
         {{ saving() ? 'Guardando...' : (isEdit() ? 'Guardar cambios' : 'Crear cliente') }}
       </button>
+
+      @if (isAdmin() && current(); as c) {
+        <button type="button" class="mt-btn" [class.danger-btn]="c.is_active" [class.secondary]="!c.is_active"
+          [disabled]="saving()" (click)="toggleActive()">
+          {{ c.is_active ? 'Desactivar cliente' : 'Activar cliente' }}
+        </button>
+      }
     </form>
   }
 </ion-content>

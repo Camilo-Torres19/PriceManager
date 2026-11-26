@@ -14,6 +14,7 @@ import { AuthService } from '../../core/auth.service';
 import { Client, ClientInput, ClientsService } from '../../core/clients.service';
 import { errorMessage } from '../../core/format';
 import { ToastService } from '../../core/toast.service';
+import { UserSummary, UsersService } from '../../core/users.service';
 
 @Component({
   selector: 'app-prev-client-form',
@@ -27,6 +28,7 @@ export class PrevClientFormPage {
   private nav = inject(NavController);
   private route = inject(ActivatedRoute);
   private toast = inject(ToastService);
+  private users = inject(UsersService);
 
   /** Viene de /preventista/clientes/:id (no existe en /nuevo) */
   id = input<string>();
@@ -46,6 +48,13 @@ export class PrevClientFormPage {
   notes = signal('');
 
   isEdit = computed(() => !!this.id());
+  isAdmin = computed(() => this.auth.role() === 'admin');
+  /** El admin trabaja bajo /admin/clientes; el preventista bajo /preventista/clientes */
+  base = computed(() => (this.isAdmin() ? '/admin/clientes' : '/preventista/clientes'));
+
+  /** Solo admin: a quién está asignado el cliente */
+  preventistas = signal<UserSummary[]>([]);
+  preventistaId = signal<number | null>(null);
 
   errors = computed(() => {
     const e: Record<string, string> = {};
@@ -58,6 +67,9 @@ export class PrevClientFormPage {
 
   ionViewWillEnter() {
     this.submitted.set(false);
+    if (this.isAdmin()) {
+      this.users.list('preventista').subscribe({ next: (list) => this.preventistas.set(list) });
+    }
     const id = this.id() ? Number(this.id()) : null;
     if (!id) {
       this.current.set(null);
@@ -88,6 +100,25 @@ export class PrevClientFormPage {
     // Cliente nuevo: por defecto, la zona del preventista
     this.zone.set(c ? (c.zone ?? '') : (this.auth.user()?.zone ?? ''));
     this.notes.set(c?.notes ?? '');
+    this.preventistaId.set(c?.preventista_id ?? null);
+  }
+
+  /** Solo admin: activar o desactivar el cliente */
+  toggleActive() {
+    const c = this.current();
+    if (!c || this.saving()) return;
+    this.saving.set(true);
+    this.clients.toggle(c.id).subscribe({
+      next: (res) => {
+        this.saving.set(false);
+        this.current.set({ ...c, is_active: res.is_active });
+        void this.toast.show(res.message, 'success');
+      },
+      error: (err) => {
+        this.saving.set(false);
+        void this.toast.show(errorMessage(err), 'danger');
+      },
+    });
   }
 
   save() {
@@ -102,8 +133,8 @@ export class PrevClientFormPage {
       phone: this.phone().trim() || null,
       zone: this.zone().trim() || null,
       notes: this.notes().trim() || null,
-      // El admin conserva la asignación que ya tenía el cliente
-      preventista_id: this.current()?.preventista_id ?? null,
+      // Solo cuenta para el admin; al preventista el API le asigna el cliente a sí mismo
+      preventista_id: this.isAdmin() ? this.preventistaId() : null,
     };
 
     this.saving.set(true);
@@ -118,7 +149,7 @@ export class PrevClientFormPage {
         if (!c && back === 'pedido' && 'id' in res) {
           void this.nav.navigateBack('/preventista/pedidos/nuevo', { queryParams: { cliente: res.id } });
         } else {
-          void this.nav.navigateBack('/preventista/clientes');
+          void this.nav.navigateBack(this.base());
         }
       },
       error: (err) => {
@@ -128,3 +159,4 @@ export class PrevClientFormPage {
     });
   }
 }
+

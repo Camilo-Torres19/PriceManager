@@ -1,0 +1,9 @@
+.f-row { margin-top: 8px; align-items: center; }
+.f-row select { flex: 1; min-width: 0; border: 1px solid #d5dde7; border-radius: 10px; padding: 9px 10px; font-size: 14px; background: #fff; color: #212121; }
+.sum { padding: 12px 16px 0; font-size: 13px; color: #5b6678; }
+.card.dim { opacity: 0.6; }
+.c-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.c-name { font-size: 15px; font-weight: 800; }
+.c-sub { font-size: 12px; color: #757575; margin-top: 2px; }
+.c-prev { font-size: 12px; color: #1a3a6b; font-weight: 600; margin-top: 6px; }
+.c-prev.none { color: #c62828; }

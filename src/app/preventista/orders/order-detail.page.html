@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/preventista/pedidos" text="Atrás"></ion-back-button>
+      <ion-back-button [defaultHref]="base()" text="Atrás"></ion-back-button>
     </ion-buttons>
     <ion-title>Pedido #{{ id() }}</ion-title>
     <ion-buttons slot="end">

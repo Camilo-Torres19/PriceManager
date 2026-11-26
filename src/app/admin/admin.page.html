@@ -45,6 +45,13 @@
     <a class="act green-b" routerLink="/admin/promociones">
       <ion-icon name="megaphone-outline"></ion-icon> Gestionar promociones
     </a>
+    <a class="act orange-b" routerLink="/admin/pedidos">
+      <ion-icon name="receipt-outline"></ion-icon> Pedidos por confirmar
+      @if (pending()) { <span class="badge">{{ pending() }}</span> }
+    </a>
+    <a class="act navy-b" routerLink="/admin/clientes">
+      <ion-icon name="people-outline"></ion-icon> Clientes
+    </a>
   </div>
 
   <div class="title">Últimas actualizaciones</div>

@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Clientes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="add()" aria-label="Nuevo cliente">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="dots"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="filters">
+    <div class="search">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="search" placeholder="Buscar cliente, dirección, NIT..." aria-label="Buscar cliente"
+        [value]="search()" (input)="search.set($any($event.target).value)" />
+    </div>
+    <div class="row f-row">
+      <select aria-label="Preventista" (change)="setPreventista($any($event.target).value)">
+        <option value="" [selected]="preventistaId() === null">Todos los preventistas</option>
+        <option value="0" [selected]="preventistaId() === 0">Sin asignar ({{ unassigned() }})</option>
+        @for (u of preventistas(); track u.id) {
+          <option [value]="u.id" [selected]="preventistaId() === u.id">{{ u.name }}</option>
+        }
+      </select>
+      <button type="button" class="chip" [class.on]="showInactive()" (click)="showInactive.set(!showInactive())">
+        Ver inactivos
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="sum">{{ filtered().length }} cliente(s)</div>
+    <div class="wrap">
+      @for (c of filtered(); track c.id) {
+        <div class="card click" [class.dim]="!c.is_active" role="button" tabindex="0" (click)="edit(c)" (keydown.enter)="edit(c)">
+          <div class="c-head">
+            <div class="c-name">{{ c.name }}</div>
+            @if (!c.is_active) { <span class="st st-anulado">Inactivo</span> }
+          </div>
+          @if (c.address) { <div class="c-sub">{{ c.address }}</div> }
+          <div class="c-prev" [class.none]="!c.preventista_name">
+            👤 {{ c.preventista_name || 'Sin asignar' }}
+          </div>
+        </div>
+      } @empty {
+        <div class="state">No hay clientes con estos filtros.</div>
+      }
+    </div>
+  }
+</ion-content>

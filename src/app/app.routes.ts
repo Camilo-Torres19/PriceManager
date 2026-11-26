@@ -45,6 +45,35 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./admin/promotions/promotion-form.page').then((m) => m.PromotionFormPage),
       },
+      {
+        path: 'pedidos',
+        loadComponent: () => import('./admin/orders/admin-orders.page').then((m) => m.AdminOrdersPage),
+      },
+      {
+        // Mismo detalle y formulario que usa el preventista (las acciones cambian según el rol)
+        path: 'pedidos/:id/editar',
+        loadComponent: () =>
+          import('./preventista/orders/order-form.page').then((m) => m.PrevOrderFormPage),
+      },
+      {
+        path: 'pedidos/:id',
+        loadComponent: () =>
+          import('./preventista/orders/order-detail.page').then((m) => m.OrderDetailPage),
+      },
+      {
+        path: 'clientes',
+        loadComponent: () => import('./admin/clients/admin-clients.page').then((m) => m.AdminClientsPage),
+      },
+      {
+        path: 'clientes/nuevo',
+        loadComponent: () =>
+          import('./preventista/clients/client-form.page').then((m) => m.PrevClientFormPage),
+      },
+      {
+        path: 'clientes/:id',
+        loadComponent: () =>
+          import('./preventista/clients/client-form.page').then((m) => m.PrevClientFormPage),
+      },
     ],
   },
   {
