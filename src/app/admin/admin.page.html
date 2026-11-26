@@ -25,8 +25,8 @@
     </div>
     <div class="stat">
       <ion-icon name="megaphone-outline" class="green"></ion-icon>
-      <b class="green">–</b>
-      <small>Promociones</small>
+      <b class="green" data-test="promos">{{ loading() ? '–' : activePromos() }}</b>
+      <small>Promos vigentes</small>
     </div>
     <div class="stat">
       <ion-icon name="alert-outline" class="orange"></ion-icon>
@@ -42,7 +42,9 @@
     <a class="act blue-b" routerLink="/admin/productos">
       <ion-icon name="cube-outline"></ion-icon> Gestionar productos
     </a>
-    <div class="act off"><ion-icon name="megaphone-outline"></ion-icon> Promociones (próximamente)</div>
+    <a class="act green-b" routerLink="/admin/promociones">
+      <ion-icon name="megaphone-outline"></ion-icon> Gestionar promociones
+    </a>
   </div>
 
   <div class="title">Últimas actualizaciones</div>

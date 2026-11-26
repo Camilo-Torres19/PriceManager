@@ -30,6 +30,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./admin/products/product-form.page').then((m) => m.ProductFormPage),
       },
+      {
+        path: 'promociones',
+        loadComponent: () =>
+          import('./admin/promotions/promotions.page').then((m) => m.PromotionsPage),
+      },
+      {
+        path: 'promociones/nuevo',
+        loadComponent: () =>
+          import('./admin/promotions/promotion-form.page').then((m) => m.PromotionFormPage),
+      },
+      {
+        path: 'promociones/:id',
+        loadComponent: () =>
+          import('./admin/promotions/promotion-form.page').then((m) => m.PromotionFormPage),
+      },
     ],
   },
   {

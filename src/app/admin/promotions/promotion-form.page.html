@@ -1,0 +1,112 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/promociones"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit() ? 'Editar promoción' : 'Nueva promoción' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (loadError()) {
+    <div class="state"><p class="err">{{ loadError() }}</p></div>
+  } @else {
+    <form class="card" (submit)="$event.preventDefault(); save()" novalidate>
+      <div class="field">
+        <label for="title">Título <span class="req">*</span></label>
+        <input id="title" name="title" type="text" placeholder="Ej: Descuento de temporada"
+          [value]="title()" (input)="title.set($any($event.target).value)" />
+        @if (submitted() && errors()['title']) { <small class="msg">{{ errors()['title'] }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="description">Descripción</label>
+        <textarea id="description" name="description" rows="2" placeholder="Opcional"
+          [value]="description()" (input)="description.set($any($event.target).value)"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="type">Tipo</label>
+          <select id="type" name="type" (change)="type.set($any($event.target).value)">
+            @for (o of typeOptions(); track o.value) {
+              <option [value]="o.value" [selected]="type() === o.value">{{ o.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label for="value">{{ type() === 'discount_percent' ? 'Porcentaje (%)' : type() === 'discount_fixed' ? 'Descuento ($)' : 'Valor' }} <span class="req">*</span></label>
+          <input id="value" name="value" type="number" inputmode="decimal" min="0" step="any"
+            [value]="value()" (input)="value.set($any($event.target).value)" />
+        </div>
+      </div>
+      <small class="hint">{{ valueLabel() }}</small>
+      @if (submitted() && errors()['value']) { <small class="msg">{{ errors()['value'] }}</small> }
+
+      <div class="row mt">
+        <div class="field">
+          <label for="start">Fecha de inicio</label>
+          <input id="start" name="start" type="date" [value]="startDate()" (input)="startDate.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+          <label for="end">Fecha fin</label>
+          <input id="end" name="end" type="date" [value]="endDate()" (input)="endDate.set($any($event.target).value)" />
+        </div>
+      </div>
+      <small class="hint">Sin fecha fin, la promoción no vence hasta que la desactives.</small>
+      @if (submitted() && errors()['dates']) { <small class="msg">{{ errors()['dates'] }}</small> }
+
+      <div class="field mt">
+        <label>Productos incluidos <span class="req">*</span> <span class="count">({{ selectedIds().length }} elegidos)</span></label>
+        <div class="pick">
+          <div class="pick-head">
+            <input type="search" class="pick-search" placeholder="Buscar producto..." aria-label="Buscar producto"
+              [value]="productSearch()" (input)="productSearch.set($any($event.target).value)" />
+            <button type="button" class="mini" (click)="selectVisible()">Todos</button>
+            <button type="button" class="mini" (click)="clearVisible()">Ninguno</button>
+          </div>
+          <div class="pick-list">
+            @for (p of visibleProducts(); track p.id) {
+              <label class="pick-row">
+                <input type="checkbox" [checked]="isSelected(p.id)" (change)="toggleProduct(p.id)" />
+                <span class="pk-name">{{ p.name }}</span>
+                <span class="pk-meta">
+                  @if (isSelected(p.id) && afterPrice(p) !== null) {
+                    <span class="old">{{ money(p.current_price) }}</span><span class="new">{{ money(afterPrice(p)!) }}</span>
+                  } @else {
+                    {{ money(p.current_price) }}
+                  }
+                </span>
+              </label>
+            } @empty {
+              <div class="pick-empty">No hay productos que coincidan.</div>
+            }
+          </div>
+        </div>
+        @if (zeroed().length > 0) {
+          <small class="warn">⚠ {{ errors()['products'] }}</small>
+        } @else if (submitted() && errors()['products']) {
+          <small class="msg">{{ errors()['products'] }}</small>
+        }
+
+        @if (preview().length > 0) {
+          <div class="preview">
+            <div class="pv-head">Así quedan los precios</div>
+            @for (r of preview(); track r.id) {
+              <div class="pv-row" [class.zero]="r.after <= 0">
+                <span class="pv-name">{{ r.name }}</span>
+                <span class="pv-price"><span class="old">{{ money(r.before) }}</span><span class="new">{{ money(r.after) }}</span></span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : (isEdit() ? 'Guardar cambios' : 'Crear promoción') }}
+      </button>
+    </form>
+  }
+</ion-content>

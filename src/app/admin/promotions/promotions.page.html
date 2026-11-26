@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Promociones</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/admin/promociones/nuevo" aria-label="Nueva promoción">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="filters">
+    <div class="chips">
+      @for (f of filters; track f.key) {
+        <button type="button" class="chip" [class.on]="filter() === f.key" (click)="filter.set(f.key)">
+          {{ f.label }} <span class="n">{{ counts()[f.key] }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="wrap">
+      @for (p of visible(); track p.id) {
+        <div class="card" [class.dim]="p.status === 'vencida' || p.status === 'inactiva'"
+          role="button" tabindex="0" (click)="edit(p)" (keydown.enter)="edit(p)">
+          <div class="top">
+            <div class="txt">
+              <div class="pt">{{ p.title }}</div>
+              @if (p.description) { <div class="pd">{{ p.description }}</div> }
+            </div>
+            <span class="badge b-{{ p.status }}">{{ badgeLabel(p) }}</span>
+          </div>
+          <div class="meta">
+            <span class="st st-{{ p.status }}">{{ statusLabel[p.status] }}</span>
+            <span>{{ rangeLabel(p) }}</span>
+            <span>{{ p.product_ids.length }} producto(s)</span>
+          </div>
+          @if (p.lines.length > 0) {
+            <div class="prices">
+              @for (l of p.lines; track l.id) {
+                <div class="pr-row">
+                  <span class="pr-name">{{ l.name }}</span>
+                  <span class="pr-val">
+                    @if (l.after !== l.before) { <span class="old">{{ money(l.before) }}</span> }
+                    <span class="new">{{ money(l.after) }}</span>
+                  </span>
+                </div>
+              }
+              @if (p.more > 0) { <div class="pr-more">y {{ p.more }} más…</div> }
+            </div>
+          }
+          <div class="foot">
+            <button type="button" role="switch" class="sw" [class.on]="p.is_active"
+              [attr.aria-checked]="!!p.is_active" (click)="toggle(p, $event)">
+              <i></i><span>{{ p.is_active ? 'Activa' : 'Inactiva' }}</span>
+            </button>
+            <button type="button" class="icon-btn" aria-label="Eliminar promoción" (click)="remove(p, $event)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="state">
+          @if (counts().todas === 0) { Todavía no hay promociones. Crea la primera con el botón +. }
+          @else { No hay promociones en esta categoría. }
+        </div>
+      }
+    </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/admin/promociones/nuevo" aria-label="Nueva promoción">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
