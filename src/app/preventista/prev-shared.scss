@@ -1,0 +1,60 @@
+// Estilos comunes de las pantallas del preventista (clientes y pedidos)
+ion-toolbar { --background: #1a3a6b; --color: #fff; }
+ion-back-button { --color: #fff; }
+ion-content { --background: #f0f4f8; color: #212121; }
+
+.filters { background: #fff; padding: 10px 12px 8px; border-bottom: 1px solid #e6eaf0; }
+.search {
+  display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px;
+  border-radius: 12px; background: #eef1f5; color: #8a94a6;
+}
+.search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 14px; color: #212121; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 2px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; border: 0; border-radius: 18px; padding: 7px 14px; font-size: 13px; font-weight: 600;
+  background: #eef1f5; color: #5b6678; cursor: pointer;
+}
+.chip.on { background: #1a3a6b; color: #fff; }
+.chip .n { opacity: 0.7; margin-left: 2px; }
+
+.wrap { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.card { background: #fff; border-radius: 16px; padding: 14px; border: 1px solid #e6eaf0; }
+.card.click { cursor: pointer; }
+.state { text-align: center; padding: 48px 24px; color: #757575; }
+.err { color: #c62828; font-weight: 600; }
+
+// Estados de pedido
+.st { display: inline-block; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 10px; }
+.st-pendiente { background: #fff4d6; color: #8a6100; }
+.st-confirmado { background: #e3f6ea; color: #2e7d32; }
+.st-anulado { background: #eceff3; color: #6b7788; }
+
+// Formularios
+.form { background: #fff; border-radius: 16px; padding: 16px; margin: 12px; border: 1px solid #e6eaf0; }
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; flex: 1; min-width: 0; }
+.field label { font-size: 13px; font-weight: 700; color: #1a3a6b; }
+.field input, .field textarea, .field select {
+  width: 100%; border: 1px solid #d5dde7; border-radius: 10px; padding: 10px 12px; font-size: 15px;
+  background: #fff; color: #212121; font-family: inherit;
+}
+.field input:focus, .field textarea:focus, .field select:focus { outline: 2px solid #2e5aa8; border-color: transparent; }
+.row { display: flex; gap: 10px; }
+.req { color: #c62828; }
+.msg { color: #c62828; font-size: 12px; }
+.hint { color: #6b7788; font-size: 12px; }
+.primary {
+  width: 100%; border: 0; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 800;
+  background: #1a3a6b; color: #fff; cursor: pointer;
+}
+.primary:disabled { opacity: 0.5; }
+.secondary {
+  width: 100%; border: 1px solid #1a3a6b; border-radius: 12px; padding: 12px; font-size: 15px; font-weight: 700;
+  background: #fff; color: #1a3a6b; cursor: pointer;
+}
+.danger-btn {
+  width: 100%; border: 1px solid #c62828; border-radius: 12px; padding: 12px; font-size: 15px; font-weight: 700;
+  background: #fff; color: #c62828; cursor: pointer;
+}
+.old { color: #8a96a3; text-decoration: line-through; font-size: 12px; }
+.green { color: #2e7d32; }

@@ -1,0 +1,144 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="isEdit() ? '/preventista/pedidos/' + id() : '/preventista'" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit() ? 'Editar pedido #' + id() : 'Nuevo pedido' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (loadError()) {
+    <div class="state"><p class="err">{{ loadError() }}</p></div>
+  } @else {
+    <!-- 1. Cliente -->
+    <section class="form">
+      <div class="sec-title">1. Cliente</div>
+      @if (clients().length === 0) {
+        <p class="hint">Todavía no tienes clientes.</p>
+        <button type="button" class="secondary" (click)="newClient()">+ Crear cliente</button>
+      } @else {
+        <div class="field">
+          <select aria-label="Cliente" (change)="clientId.set(+$any($event.target).value || null)">
+            <option value="" [selected]="!clientId()">Elige el cliente...</option>
+            @for (c of clients(); track c.id) {
+              <option [value]="c.id" [selected]="clientId() === c.id">{{ c.name }}</option>
+            }
+          </select>
+          @if (submitted() && errors()['client']) { <small class="msg">{{ errors()['client'] }}</small> }
+        </div>
+        @if (client(); as c) {
+          @if (c.address || c.phone) {
+            <p class="hint">{{ c.address }}{{ c.address && c.phone ? ' · ' : '' }}{{ c.phone }}</p>
+          }
+        }
+        @if (!isEdit()) {
+          <button type="button" class="link" (click)="newClient()">+ Cliente nuevo</button>
+        }
+      }
+    </section>
+
+    <!-- 2. Productos del pedido -->
+    <section class="form">
+      <div class="sec-title">2. Productos del pedido</div>
+      @for (l of lines(); track l.product_id) {
+        <div class="line" [class.warn]="l.stock !== null && l.quantity > l.stock">
+          <div class="l-top">
+            <div class="l-name">{{ l.name }}</div>
+            <button type="button" class="x" (click)="removeLine(l.product_id)" [attr.aria-label]="'Quitar ' + l.name">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+          <div class="l-mid">
+            <div class="l-price">
+              @if (l.applied_price !== l.unit_price) { <span class="old">{{ money(l.unit_price) }}</span> }
+              <b [class.green]="l.applied_price !== l.unit_price">{{ money(l.applied_price) }}</b>
+              <small>/ {{ l.unit || 'und' }}</small>
+            </div>
+            <div class="qty">
+              <button type="button" (click)="setQty(l.product_id, l.quantity - 1)" [disabled]="l.quantity <= 1" aria-label="Menos">
+                <ion-icon name="remove"></ion-icon>
+              </button>
+              <input type="number" inputmode="numeric" min="1" [value]="l.quantity" aria-label="Cantidad"
+                (input)="typedQty(l.product_id, $event)" (blur)="fixQty(l, $event)" />
+              <button type="button" (click)="setQty(l.product_id, l.quantity + 1)" aria-label="Más">
+                <ion-icon name="add"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <div class="l-bot">
+            @if (l.promo_title) { <span class="promo">{{ l.promo_title }}</span> } @else { <span></span> }
+            <b>{{ money(l.applied_price * l.quantity) }}</b>
+          </div>
+          @if (l.stock !== null && l.quantity > l.stock) {
+            <div class="l-warn"><ion-icon name="warning-outline"></ion-icon> Solo hay {{ l.stock }} en stock</div>
+          }
+        </div>
+      } @empty {
+        <p class="hint">Busca abajo y toca un producto para agregarlo.</p>
+      }
+      @if (submitted() && errors()['lines']) { <small class="msg">{{ errors()['lines'] }}</small> }
+
+      <!-- Buscador de productos -->
+      <div class="search mt">
+        <ion-icon name="search-outline"></ion-icon>
+        <input type="search" placeholder="Agregar producto..." aria-label="Buscar producto"
+          [value]="productSearch()" (input)="productSearch.set($any($event.target).value)" />
+      </div>
+      <div class="results">
+        @for (p of results(); track p.id) {
+          <button type="button" class="res" (click)="addProduct(p)">
+            <span class="r-txt">
+              <span class="r-name">{{ p.name }}</span>
+              <span class="r-meta">{{ p.brand || 'Sin marca' }} · stock {{ p.stock }}</span>
+            </span>
+            <span class="r-price">
+              @if (p.promo) { <span class="old">{{ money(p.current_price) }}</span> }
+              <b [class.green]="!!p.promo">{{ money(p.finalPrice) }}</b>
+            </span>
+            @if (inOrder().get(p.id); as q) {
+              <span class="r-q">{{ q }}</span>
+            } @else {
+              <ion-icon class="r-add" name="add-circle-outline"></ion-icon>
+            }
+          </button>
+        } @empty {
+          <p class="hint">No hay productos que coincidan.</p>
+        }
+      </div>
+    </section>
+
+    <!-- 3. Notas -->
+    <section class="form">
+      <div class="sec-title">3. Notas (opcional)</div>
+      <div class="field">
+        <textarea rows="2" maxlength="1000" placeholder="Ej: entregar en la tarde" aria-label="Notas"
+          [value]="notes()" (input)="notes.set($any($event.target).value)"></textarea>
+      </div>
+    </section>
+    <div class="spacer"></div>
+  }
+</ion-content>
+
+@if (!loading() && !loadError()) {
+  <ion-footer>
+    <div class="bar">
+      <div class="b-tot">
+        @if (totals().discount > 0) {
+          <small>Ahorro {{ money(totals().discount) }}</small>
+        } @else {
+          <small>{{ totals().units }} unidad(es)</small>
+        }
+        <b>{{ money(totals().total) }}</b>
+      </div>
+      <ion-button class="b-send" [disabled]="saving()" (click)="send()">
+        {{ saving() ? 'Enviando...' : (isEdit() ? 'Guardar' : 'Enviar pedido') }}
+      </ion-button>
+    </div>
+    @if (overStock().length > 0) {
+      <div class="b-warn">⚠ {{ overStock().length }} producto(s) por encima del stock</div>
+    }
+  </ion-footer>
+}

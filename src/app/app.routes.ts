@@ -61,6 +61,41 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./preventista/promos.page').then((m) => m.PreventistaPromosPage),
       },
+      {
+        path: 'clientes',
+        loadComponent: () =>
+          import('./preventista/clients/clients.page').then((m) => m.PrevClientsPage),
+      },
+      {
+        path: 'clientes/nuevo',
+        loadComponent: () =>
+          import('./preventista/clients/client-form.page').then((m) => m.PrevClientFormPage),
+      },
+      {
+        path: 'clientes/:id',
+        loadComponent: () =>
+          import('./preventista/clients/client-form.page').then((m) => m.PrevClientFormPage),
+      },
+      {
+        path: 'pedidos',
+        loadComponent: () =>
+          import('./preventista/orders/orders.page').then((m) => m.PrevOrdersPage),
+      },
+      {
+        path: 'pedidos/nuevo',
+        loadComponent: () =>
+          import('./preventista/orders/order-form.page').then((m) => m.PrevOrderFormPage),
+      },
+      {
+        path: 'pedidos/:id/editar',
+        loadComponent: () =>
+          import('./preventista/orders/order-form.page').then((m) => m.PrevOrderFormPage),
+      },
+      {
+        path: 'pedidos/:id',
+        loadComponent: () =>
+          import('./preventista/orders/order-detail.page').then((m) => m.OrderDetailPage),
+      },
     ],
   },
   {

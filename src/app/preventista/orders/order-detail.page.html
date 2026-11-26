@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/preventista/pedidos" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pedido #{{ id() }}</ion-title>
+    <ion-buttons slot="end">
+      @if (order()) {
+        <ion-button (click)="copy()" aria-label="Copiar resumen">
+          <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+        </ion-button>
+      }
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else if (order(); as o) {
+    <div class="wrap">
+      <div class="card">
+        <div class="d-head">
+          <div>
+            <div class="d-client">{{ o.client_name }}</div>
+            <div class="d-meta">{{ shortDate(o.created_at) }}@if (isAdmin()) { · {{ o.preventista_name }} }</div>
+          </div>
+          <span class="st st-{{ o.status }}">{{ statusText[o.status] }}</span>
+        </div>
+        @if (o.client_address) {
+          <div class="d-line"><ion-icon name="location-outline"></ion-icon>{{ o.client_address }}</div>
+        }
+        @if (o.client_phone) {
+          <a class="d-line d-phone" [href]="'tel:' + o.client_phone"><ion-icon name="call-outline"></ion-icon>{{ o.client_phone }}</a>
+        }
+        @if (o.notes) { <div class="d-notes">📝 {{ o.notes }}</div> }
+      </div>
+
+      <div class="card">
+        @for (i of o.items; track i.id) {
+          <div class="it">
+            <div class="it-txt">
+              <div class="it-name">{{ i.product_name }}</div>
+              <div class="it-meta">
+                {{ i.quantity }} × {{ money(i.applied_price) }}
+                @if (i.discount > 0) { <span class="old">{{ money(i.unit_price) }}</span> }
+              </div>
+              @if (i.promotion_title) { <span class="promo">{{ i.promotion_title }}</span> }
+            </div>
+            <b>{{ money(i.subtotal) }}</b>
+          </div>
+        }
+        <div class="tot">
+          @if (o.discount_total > 0) {
+            <div class="t-row"><span>Subtotal</span><span>{{ money(o.subtotal) }}</span></div>
+            <div class="t-row green"><span>Descuentos</span><span>− {{ money(o.discount_total) }}</span></div>
+          }
+          <div class="t-row t-total"><span>Total</span><span>{{ money(o.total) }}</span></div>
+        </div>
+      </div>
+
+      @if (o.status === 'confirmado') {
+        <p class="hint">Confirmado por {{ o.confirmed_by }} · {{ shortDate(o.confirmed_at!) }}</p>
+      }
+      @if (o.status === 'anulado') {
+        <p class="hint">
+          Anulado por {{ o.cancelled_by }} · {{ shortDate(o.cancelled_at!) }}
+          @if (o.cancel_reason) { — {{ o.cancel_reason }} }
+        </p>
+      }
+      @if (o.status === 'pendiente' && !isAdmin()) {
+        <p class="hint">Puedes editarlo o anularlo hasta que el administrador lo confirme.</p>
+      }
+
+      <div class="actions">
+        @if (canConfirm()) {
+          <button type="button" class="primary" [disabled]="busy()" (click)="confirm()">Confirmar pedido</button>
+        }
+        @if (canEdit()) {
+          <button type="button" class="secondary" [disabled]="busy()" (click)="edit()">Editar pedido</button>
+          <button type="button" class="danger-btn" [disabled]="busy()" (click)="cancel()">Anular pedido</button>
+        }
+      </div>
+    </div>
+  }
+</ion-content>

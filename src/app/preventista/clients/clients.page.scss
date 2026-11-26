@@ -1,0 +1,10 @@
+.c-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.c-txt { min-width: 0; }
+.c-name { font-size: 15px; font-weight: 800; }
+.c-sub { font-size: 12px; color: #757575; margin-top: 2px; }
+.c-order {
+  flex: none; display: flex; align-items: center; gap: 4px; border: 0; border-radius: 10px;
+  padding: 7px 10px; font-size: 13px; font-weight: 700; background: #e3f6ea; color: #2e7d32; cursor: pointer;
+}
+.c-line { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #5b6678; margin-top: 6px; }
+.c-phone { color: #1a3a6b; text-decoration: none; font-weight: 600; }

@@ -30,6 +30,7 @@ import { PricedProduct, applyBestPromo, vigentes } from '../core/pricing';
 import { badgeLabel } from '../core/promo-utils';
 import { Promotion, PromotionsService } from '../core/promotions.service';
 import { ToastService } from '../core/toast.service';
+import { PrevNavComponent } from './nav/prev-nav.component';
 
 const LOW_STOCK = 10;
 
@@ -39,7 +40,7 @@ const LOW_STOCK = 10;
   styleUrls: ['preventista.page.scss'],
   imports: [
     IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
-    IonContent, IonSpinner, IonRefresher, IonRefresherContent,
+    IonContent, IonSpinner, IonRefresher, IonRefresherContent, PrevNavComponent,
   ],
 })
 export class PreventistaPage {

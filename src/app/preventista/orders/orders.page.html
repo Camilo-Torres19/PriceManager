@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mis pedidos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="dots"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="filters">
+    <div class="chips">
+      @for (f of filters; track f.key) {
+        <button type="button" class="chip" [class.on]="filter() === f.key" (click)="filter.set(f.key)">
+          {{ f.label }} <span class="n">{{ counts()[f.key] }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    @if (visible().length > 0) {
+      <div class="sum">{{ visible().length }} pedido(s) · Total {{ money(sum()) }}</div>
+    }
+    <div class="wrap">
+      @for (o of visible(); track o.id) {
+        <div class="card click" [class.dim]="o.status === 'anulado'" role="button" tabindex="0"
+          (click)="open(o)" (keydown.enter)="open(o)">
+          <div class="o-head">
+            <div class="o-txt">
+              <div class="o-client">{{ o.client_name }}</div>
+              <div class="o-meta">
+                Pedido #{{ o.id }} · {{ shortDate(o.created_at) }}
+                @if (auth.role() === 'admin') { · {{ o.preventista_name }} }
+              </div>
+            </div>
+            <span class="st st-{{ o.status }}">{{ statusText[o.status] }}</span>
+          </div>
+          <div class="o-foot">
+            <span class="o-items">{{ o.items_count }} producto(s)</span>
+            <span class="o-total">{{ money(o.total) }}</span>
+          </div>
+        </div>
+      } @empty {
+        <div class="state">
+          @if (items().length === 0) {
+            Todavía no has tomado pedidos.<br />
+            <ion-button size="small" (click)="newOrder()">Tomar el primero</ion-button>
+          } @else {
+            No hay pedidos en este estado.
+          }
+        </div>
+      }
+    </div>
+  }
+</ion-content>
+
+<app-prev-nav active="pedidos"></app-prev-nav>

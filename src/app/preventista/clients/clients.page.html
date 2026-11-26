@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mis clientes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="add()" aria-label="Nuevo cliente">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="dots"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="filters">
+    <div class="search">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="search" placeholder="Buscar por nombre, dirección, NIT..." aria-label="Buscar cliente"
+        [value]="search()" (input)="search.set($any($event.target).value)" />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="wrap">
+      @for (c of filtered(); track c.id) {
+        <div class="card click" role="button" tabindex="0" (click)="edit(c)" (keydown.enter)="edit(c)">
+          <div class="c-head">
+            <div class="c-txt">
+              <div class="c-name">{{ c.name }}</div>
+              @if (c.contact_name) { <div class="c-sub">{{ c.contact_name }}</div> }
+            </div>
+            <button type="button" class="c-order" (click)="order(c, $event)" aria-label="Tomar pedido">
+              <ion-icon name="cart-outline"></ion-icon> Pedido
+            </button>
+          </div>
+          @if (c.address) {
+            <div class="c-line"><ion-icon name="location-outline"></ion-icon>{{ c.address }}</div>
+          }
+          @if (c.phone) {
+            <a class="c-line c-phone" [href]="'tel:' + c.phone" (click)="$event.stopPropagation()">
+              <ion-icon name="call-outline"></ion-icon>{{ c.phone }}
+            </a>
+          }
+        </div>
+      } @empty {
+        <div class="state">
+          @if (items().length === 0) {
+            Todavía no tienes clientes.<br />
+            <ion-button size="small" (click)="add()">Crear el primero</ion-button>
+          } @else {
+            No hay clientes que coincidan.
+          }
+        </div>
+      }
+    </div>
+  }
+</ion-content>
+
+<app-prev-nav active="clientes"></app-prev-nav>
