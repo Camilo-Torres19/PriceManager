@@ -48,9 +48,20 @@ export const routes: Routes = [
     ],
   },
   {
+    // Catálogo del preventista (el admin también puede verlo)
     path: 'preventista',
     canActivate: [authGuard, roleGuard('preventista', 'admin')],
-    loadComponent: () => import('./preventista/preventista.page').then((m) => m.PreventistaPage),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./preventista/preventista.page').then((m) => m.PreventistaPage),
+      },
+      {
+        path: 'promociones',
+        loadComponent: () =>
+          import('./preventista/promos.page').then((m) => m.PreventistaPromosPage),
+      },
+    ],
   },
   {
     // Pantalla de la fase 1 (prueba de conexión con el API)

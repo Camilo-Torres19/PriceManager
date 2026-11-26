@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/preventista" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Promociones activas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="dots"></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="wrap">
+      @for (c of cards(); track c.promo.id) {
+        <div class="promo">
+          <div class="p-head">
+            <div class="p-big">{{ c.headline }}</div>
+            <div class="p-title">{{ c.promo.title }}</div>
+            @if (c.promo.description) { <div class="p-desc">{{ c.promo.description }}</div> }
+            <div class="p-until">{{ c.until }}</div>
+          </div>
+          <div class="p-body">
+            <div class="p-label">Productos incluidos:</div>
+            @for (i of c.items; track i.id) {
+              <div class="row">
+                <div class="r-txt">
+                  <div class="r-name">{{ i.name }}</div>
+                  @if (i.brand) { <div class="r-brand">{{ i.brand }}</div> }
+                </div>
+                <div class="r-prices">
+                  @if (i.after !== i.before) { <span class="old">{{ money(i.before) }}</span> }
+                  <span class="new">{{ money(i.after) }}</span>
+                </div>
+              </div>
+            } @empty {
+              <div class="r-empty">Los productos de esta promoción no están disponibles.</div>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="state">No hay promociones vigentes en este momento.</div>
+      }
+    </div>
+  }
+</ion-content>

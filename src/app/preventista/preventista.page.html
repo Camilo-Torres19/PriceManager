@@ -1,12 +1,105 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Catálogo</ion-title>
+    <ion-buttons slot="end">
+      @if (isAdmin()) {
+        <ion-button (click)="goAdmin()" aria-label="Ir al panel admin">
+          <ion-icon slot="icon-only" name="grid-outline"></ion-icon>
+        </ion-button>
+      }
+      <ion-button (click)="openPromos()" aria-label="Ver promociones">
+        <ion-icon slot="icon-only" name="megaphone-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="auth.logout()" aria-label="Cerrar sesión">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h2>Hola, {{ auth.user()?.name }}</h2>
-  <p>Zona: <strong>{{ auth.user()?.zone || 'sin asignar' }}</strong></p>
-  <p>Aquí irá el catálogo de precios y promociones (fase 5).</p>
-  <ion-button color="medium" (click)="auth.logout()">Cerrar sesión</ion-button>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="dots"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="filters">
+    <div class="search">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="search" placeholder="Buscar producto, marca..." aria-label="Buscar producto"
+        [value]="search()" (input)="search.set($any($event.target).value)" />
+    </div>
+    <div class="chips">
+      <button type="button" class="chip" [class.on]="selectedCategory() === null" (click)="selectedCategory.set(null)">
+        Todos
+      </button>
+      @for (c of usedCategories(); track c.id) {
+        <button type="button" class="chip" [class.on]="selectedCategory() === c.id" (click)="selectedCategory.set(c.id)">
+          {{ c.name }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <div class="h-name">Hola, {{ auth.user()?.name }} 👋</div>
+      <div class="h-zone">{{ auth.user()?.zone || 'Zona sin asignar' }}</div>
+    </div>
+    <div class="h-count">
+      <b>{{ loading() ? '–' : products().length }}</b>
+      <small>productos</small>
+    </div>
+  </div>
+
+  @if (!loading() && activePromos().length > 0) {
+    <button type="button" class="promo-banner" (click)="openPromos()">
+      <ion-icon name="pricetags-outline"></ion-icon>
+      <span>{{ activePromos().length }} {{ activePromos().length === 1 ? 'promoción activa disponible' : 'promociones activas disponibles' }}</span>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  }
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (p of filtered(); track p.id) {
+        <div class="card" [class.has-promo]="p.promo">
+          <div class="c-top">
+            <span class="cat">{{ p.category_name || 'Sin categoría' }}</span>
+            @if (p.promo) { <span class="off">{{ badgeLabel(p.promo) }}</span> }
+          </div>
+          <div class="c-name">{{ p.name }}</div>
+          <div class="c-brand">{{ p.brand || 'Sin marca' }}</div>
+          @if (p.description) { <div class="c-desc">{{ p.description }}</div> }
+
+          <div class="c-bottom">
+            <div class="c-prices">
+              @if (p.promo) { <span class="old">{{ money(p.current_price) }}</span> }
+              <span class="price">{{ money(p.finalPrice) }}</span>
+              <span class="unit">/ {{ p.unit }}</span>
+            </div>
+            <button type="button" class="copy" aria-label="Copiar precio" (click)="copy(p, $event)">
+              <ion-icon name="copy-outline"></ion-icon>
+            </button>
+          </div>
+
+          @if (p.stock === 0) {
+            <span class="stock out">Agotado</span>
+          } @else if (p.stock <= lowStock) {
+            <span class="stock low">Stock: {{ p.stock }}</span>
+          } @else {
+            <span class="stock ok">Stock: {{ p.stock }}</span>
+          }
+        </div>
+      } @empty {
+        <div class="state wide">No hay productos que coincidan.</div>
+      }
+    </div>
+  }
 </ion-content>
