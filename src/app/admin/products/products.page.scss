@@ -1,0 +1,42 @@
+ion-toolbar { --background: #1a3a6b; --color: #fff; }
+ion-content { --background: #f0f4f8; color: #212121; }
+ion-fab-button { --background: #1a3a6b; --color: #fff; }
+
+.filters { background: #fff; padding: 10px 12px 8px; border-bottom: 1px solid #e6eaf0; }
+.search {
+  display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px;
+  border-radius: 12px; background: #eef1f5; color: #8a94a6;
+}
+.search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 14px; color: #212121; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 2px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; border: 0; border-radius: 18px; padding: 7px 14px; font-size: 13px; font-weight: 600;
+  background: #eef1f5; color: #5b6678; cursor: pointer;
+}
+.chip.on { background: #1a3a6b; color: #fff; }
+
+.count { padding: 12px 16px 6px; font-size: 12px; color: #6b7788; }
+.list { background: #fff; }
+.item { display: flex; align-items: center; gap: 12px; padding: 14px 12px; border-bottom: 1px solid #e6eaf0; cursor: pointer; }
+.ico {
+  flex: none; width: 40px; height: 40px; border-radius: 12px; background: #e8f0fb; color: #1a3a6b;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.main { flex: 1; min-width: 0; }
+.name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta { font-size: 12px; color: #757575; margin-top: 2px; }
+.line { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.price { font-size: 15px; font-weight: 800; color: #1a3a6b; }
+.unit { font-size: 11px; color: #757575; }
+.tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.tag.low { background: #ffc409; color: #3d2f00; }
+.tag.out { background: #eb445a; color: #fff; }
+.actions { display: flex; gap: 2px; }
+.icon-btn {
+  width: 38px; height: 38px; border: 0; border-radius: 50%; background: transparent; color: #1a3a6b;
+  font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.icon-btn.danger { color: #c62828; }
+.state { text-align: center; padding: 48px 24px; color: #757575; }
+.err { color: #c62828; font-weight: 600; }

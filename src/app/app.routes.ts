@@ -8,9 +8,29 @@ export const routes: Routes = [
     loadComponent: () => import('./login/login.page').then((m) => m.LoginPage),
   },
   {
+    // Todo lo de /admin exige sesión y rol admin
     path: 'admin',
     canActivate: [authGuard, roleGuard('admin')],
-    loadComponent: () => import('./admin/admin.page').then((m) => m.AdminPage),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./admin/admin.page').then((m) => m.AdminPage),
+      },
+      {
+        path: 'productos',
+        loadComponent: () => import('./admin/products/products.page').then((m) => m.ProductsPage),
+      },
+      {
+        path: 'productos/nuevo',
+        loadComponent: () =>
+          import('./admin/products/product-form.page').then((m) => m.ProductFormPage),
+      },
+      {
+        path: 'productos/:id',
+        loadComponent: () =>
+          import('./admin/products/product-form.page').then((m) => m.ProductFormPage),
+      },
+    ],
   },
   {
     path: 'preventista',

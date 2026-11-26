@@ -1,0 +1,110 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit() ? 'Editar producto' : 'Nuevo producto' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (loadError()) {
+    <div class="state"><p class="err">{{ loadError() }}</p></div>
+  } @else {
+    <form class="card" (submit)="$event.preventDefault(); save()" novalidate>
+      <div class="field">
+        <label for="name">Nombre <span class="req">*</span></label>
+        <input id="name" name="name" type="text" placeholder="Nombre del producto"
+          [value]="name()" (input)="name.set($any($event.target).value)" />
+        @if (submitted() && errors()['name']) { <small class="msg">{{ errors()['name'] }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="description">Descripción</label>
+        <textarea id="description" name="description" rows="2" placeholder="Opcional"
+          [value]="description()" (input)="description.set($any($event.target).value)"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="category">Categoría</label>
+        <select id="category" name="category" (change)="onCategory($any($event.target).value)">
+          <option value="" [selected]="categoryId() === null">Sin categoría</option>
+          @for (c of categories(); track c.id) {
+            <option [value]="c.id" [selected]="categoryId() === c.id">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="brand">Marca</label>
+          <input id="brand" name="brand" type="text" [value]="brand()" (input)="brand.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+          <label for="unit">Unidad</label>
+          <input id="unit" name="unit" type="text" placeholder="unidad, caja, kg" [value]="unit()" (input)="unit.set($any($event.target).value)" />
+        </div>
+      </div>
+
+      @if (isEdit()) {
+        <div class="field">
+          <label>Precio actual</label>
+          <div class="price-box">
+            <strong>{{ money(current()?.current_price ?? 0) }}</strong>
+            <ion-button size="small" fill="outline" (click)="changePrice()">
+              <ion-icon slot="start" name="pricetag-outline"></ion-icon>
+              Cambiar precio
+            </ion-button>
+          </div>
+          <small class="hint">Los cambios de precio quedan en el historial.</small>
+        </div>
+      } @else {
+        <div class="field">
+          <label for="currentPrice">Precio actual <span class="req">*</span></label>
+          <input id="currentPrice" name="currentPrice" type="number" inputmode="decimal" min="0" placeholder="0"
+            [value]="currentPrice()" (input)="currentPrice.set($any($event.target).value)" />
+          @if (submitted() && errors()['currentPrice']) { <small class="msg">{{ errors()['currentPrice'] }}</small> }
+        </div>
+      }
+
+      <div class="row">
+        <div class="field">
+          <label for="basePrice">Precio base</label>
+          <input id="basePrice" name="basePrice" type="number" inputmode="decimal" min="0"
+            [placeholder]="isEdit() ? '' : 'Igual al actual'"
+            [value]="basePrice()" (input)="basePrice.set($any($event.target).value)" />
+          @if (submitted() && errors()['basePrice']) { <small class="msg">{{ errors()['basePrice'] }}</small> }
+        </div>
+        <div class="field">
+          <label for="stock">Stock</label>
+          <input id="stock" name="stock" type="number" inputmode="numeric" min="0"
+            [value]="stock()" (input)="stock.set($any($event.target).value)" />
+          @if (submitted() && errors()['stock']) { <small class="msg">{{ errors()['stock'] }}</small> }
+        </div>
+      </div>
+
+      <button type="submit" class="primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : (isEdit() ? 'Guardar cambios' : 'Crear producto') }}
+      </button>
+    </form>
+
+    @if (isEdit()) {
+      <div class="card hist">
+        <h3>Historial de precios</h3>
+        @for (h of history(); track h.id) {
+          <div class="h-row">
+            <div>
+              <div class="h-price">{{ money(h.old_price) }} → <strong>{{ money(h.new_price) }}</strong></div>
+              <div class="h-meta">{{ h.changed_by }} · {{ shortDate(h.changed_at) }}</div>
+              @if (h.reason) { <div class="h-meta">Motivo: {{ h.reason }}</div> }
+            </div>
+          </div>
+        } @empty {
+          <p class="hint">Todavía no hay cambios de precio.</p>
+        }
+      </div>
+    }
+  }
+</ion-content>

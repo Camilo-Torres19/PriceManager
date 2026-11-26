@@ -1,0 +1,28 @@
+ion-toolbar { --background: #1a3a6b; --color: #fff; }
+ion-content { --background: #f0f4f8; color: #212121; }
+.banner { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: #fff; padding: 20px; }
+.b-sub { font-size: 12px; opacity: 0.85; }
+.b-name { font-size: 22px; font-weight: 700; margin-top: 2px; }
+.stats { display: flex; gap: 10px; padding: 14px 12px 4px; }
+.stat {
+  flex: 1; background: #fff; border-radius: 14px; padding: 12px 8px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: 0 2px 10px rgba(15, 35, 71, 0.08);
+}
+.stat ion-icon { font-size: 22px; }
+.stat b { font-size: 26px; font-weight: 800; }
+.stat small { font-size: 11px; color: #757575; }
+.blue { color: #1a3a6b; } .green { color: #2e7d32; } .orange { color: #e65100; }
+.title { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #6b7788; padding: 16px 16px 6px; }
+.actions { display: flex; flex-direction: column; gap: 10px; padding: 4px 12px; }
+.act {
+  height: 46px; border: 2px solid; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; text-decoration: none; box-sizing: border-box;
+}
+.blue-b { color: #1a3a6b; border-color: #1a3a6b; }
+.off { color: #9aa3b2; border-color: #c9d0dc; border-style: dashed; }
+.card { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff; border-radius: 16px; margin: 8px 12px; padding: 14px 16px; box-shadow: 0 2px 10px rgba(15, 35, 71, 0.08); }
+.pn { font-size: 14px; font-weight: 700; }
+.pm { font-size: 12px; color: #757575; margin-top: 2px; }
+.pp { font-size: 15px; font-weight: 800; color: #1a3a6b; }
+.empty, .err { text-align: center; padding: 20px; color: #757575; }
+.err { color: #c62828; }

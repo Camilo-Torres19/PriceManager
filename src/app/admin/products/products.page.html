@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Productos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/admin/productos/nuevo" aria-label="Nuevo producto">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="filters">
+    <div class="search">
+      <ion-icon name="search-outline"></ion-icon>
+      <input
+        type="search"
+        placeholder="Buscar producto, marca..."
+        aria-label="Buscar producto"
+        [value]="search()"
+        (input)="search.set($any($event.target).value)"
+      />
+    </div>
+    <div class="chips">
+      <button type="button" class="chip" [class.on]="selectedCategory() === null" (click)="selectedCategory.set(null)">
+        Todos
+      </button>
+      @for (c of categories(); track c.id) {
+        <button type="button" class="chip" [class.on]="selectedCategory() === c.id" (click)="selectedCategory.set(c.id)">
+          {{ c.name }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state"><ion-spinner name="dots"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <p class="err">{{ error() }}</p>
+      <ion-button size="small" (click)="load()">Reintentar</ion-button>
+    </div>
+  } @else {
+    <div class="count">{{ filtered().length }} producto(s)</div>
+    <div class="list">
+      @for (p of filtered(); track p.id) {
+        <div class="item" role="button" tabindex="0" (click)="edit(p)" (keydown.enter)="edit(p)">
+          <div class="ico"><ion-icon name="cube-outline"></ion-icon></div>
+          <div class="main">
+            <div class="name">{{ p.name }}</div>
+            <div class="meta">{{ p.brand || 'Sin marca' }} · {{ p.category_name || 'Sin categoría' }}</div>
+            <div class="line">
+              <span class="price">{{ money(p.current_price) }}</span>
+              <span class="unit">/ {{ p.unit }}</span>
+              @if (p.stock === 0) {
+                <span class="tag out">Agotado</span>
+              } @else if (p.stock <= lowStock) {
+                <span class="tag low">Stock: {{ p.stock }}</span>
+              }
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" class="icon-btn" aria-label="Cambiar precio" (click)="changePrice(p, $event)">
+              <ion-icon name="pricetag-outline"></ion-icon>
+            </button>
+            <button type="button" class="icon-btn danger" aria-label="Desactivar producto" (click)="remove(p, $event)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="state">No hay productos que coincidan.</div>
+      }
+    </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/admin/productos/nuevo" aria-label="Nuevo producto">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

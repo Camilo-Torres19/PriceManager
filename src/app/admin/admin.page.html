@@ -1,13 +1,60 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Panel Admin</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="auth.logout()" aria-label="Cerrar sesión">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h2>Bienvenido, {{ auth.user()?.name }}</h2>
-  <p>Rol: <strong>{{ auth.role() }}</strong></p>
-  <p>Aquí irá la gestión de productos, promociones y usuarios (fases 3 y 4).</p>
-  <ion-button routerLink="/estado" fill="outline">Ver estado del API</ion-button>
-  <ion-button color="medium" (click)="auth.logout()">Cerrar sesión</ion-button>
+<ion-content>
+  <div class="banner">
+    <div>
+      <div class="b-sub">Bienvenido,</div>
+      <div class="b-name">{{ auth.user()?.name }} 👋</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <ion-icon name="cube-outline" class="blue"></ion-icon>
+      <b class="blue" data-test="total">{{ loading() ? '–' : total() }}</b>
+      <small>Productos</small>
+    </div>
+    <div class="stat">
+      <ion-icon name="megaphone-outline" class="green"></ion-icon>
+      <b class="green">–</b>
+      <small>Promociones</small>
+    </div>
+    <div class="stat">
+      <ion-icon name="alert-outline" class="orange"></ion-icon>
+      <b class="orange" data-test="low">{{ loading() ? '–' : lowStock() }}</b>
+      <small>Stock bajo</small>
+    </div>
+  </div>
+
+  @if (error()) { <p class="err">{{ error() }}</p> }
+
+  <div class="title">Acciones rápidas</div>
+  <div class="actions">
+    <a class="act blue-b" routerLink="/admin/productos">
+      <ion-icon name="cube-outline"></ion-icon> Gestionar productos
+    </a>
+    <div class="act off"><ion-icon name="megaphone-outline"></ion-icon> Promociones (próximamente)</div>
+  </div>
+
+  <div class="title">Últimas actualizaciones</div>
+  @for (p of recent(); track p.id) {
+    <div class="card">
+      <div>
+        <div class="pn">{{ p.name }}</div>
+        <div class="pm">{{ p.updated_by || '—' }} · {{ shortDate(p.updated_at) }}</div>
+      </div>
+      <div class="pp">{{ money(p.current_price) }}</div>
+    </div>
+  } @empty {
+    @if (!loading()) { <p class="empty">Aún no hay productos. Crea el primero.</p> }
+  }
 </ion-content>
